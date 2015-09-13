@@ -242,12 +242,11 @@
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
+  //rewrote this!
   _.defaults = function(obj) {
     for(var i = 1; i < arguments.length; i++){
       for (var key in arguments[i]){
-        if(obj.hasOwnProperty(key) === arguments[i].hasOwnProperty(key)){
-          obj[key] = obj[key];
-        } else{
+        if(!obj.hasOwnProperty(key)){
           obj[key] = arguments[i][key];
         }
       }
@@ -359,6 +358,20 @@
   // Calls the method named by functionOrKey on each value in the list.
   // Note: You will need to learn a bit about .apply to complete this.
   _.invoke = function(collection, functionOrKey, args) {
+    var args = [];
+    for(var i = 2; i < arguments.length; i++){
+      args.push(arguments[i]);
+    }
+    if(typeof functionOrKey === 'function'){
+      return _.map(collection, function(val){
+        return functionOrKey.apply(val, args);
+      });
+    }
+
+    return _.map(collection, function(val){
+      return val[functionOrKey].apply(val, args);
+    })
+
   };
 
   // Sort the object's values by a criterion produced by an iterator.
@@ -374,6 +387,13 @@
   // Example:
   // _.zip(['a','b','c','d'], [1,2,3]) returns [['a',1], ['b',2], ['c',3], ['d',undefined]]
   _.zip = function() {
+    var args = [];
+    _.each(arguments, function(val){
+      args.push(val);
+    });
+
+
+
   };
 
   // Takes a multidimensional array and converts it to a one-dimensional array.
@@ -416,16 +436,25 @@
   // Take the difference between one array and a number of other arrays.
   // Only the elements present in just the first array will remain.
   _.difference = function(array) {
-    // var args = [];
-    // for(var i = 0; i < arguments.length; i++){
-    //   args.push(arguments[i]);
-    // }
-    // if(args.length === 2){
-    //   var cat = array.concat(args[i]);
-    //   return _.filter(cat, function(value){
-    //     return cat.indexOf(value) === cat.lastIndexOf(value);
-    //   });
-    // }
+    var args = [];
+    var diff = _.map(array, function(val){
+      return val;
+    });
+    var diffArr = [];
+    for(var i = 1; i < arguments.length; i++){
+      args.push(arguments[i]);
+    }
+    _.each(args, function(arr){
+      diff = diff.concat(arr);
+
+    });
+    // var unique = _.uniq(diff);
+    _.each(diff, function(val){
+      if(_.indexOf(array, val) !== -1 && _.indexOf(diffArr, val) === -1){
+        diff.push(val);
+      }
+    });
+   return diffArr;
   };
 
   // Returns a function, that, when invoked, will only be triggered at most once
