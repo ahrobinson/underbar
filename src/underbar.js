@@ -391,7 +391,11 @@
     _.each(arguments, function(val){
       args.push(val);
     });
-
+    var zipped = [];
+    for(var i = 0; i < args[0].length; i++){
+      zipped.push(_.pluck(args, i));
+    }
+    return zipped;
 
 
   };
@@ -418,43 +422,34 @@
   // Takes an arbitrary number of arrays and produces an array that contains
   // every item shared between all the passed-in arrays.
   _.intersection = function() {
-    // var cat = arguments[0].concat(arguments[1]);
-    //   var see = [];
-    //    for(var i = 0; i < cat.length; i++){
-    //      for(var j = 0; j < cat.length; j++){
-    //      if(_.indexOf(cat,cat[i]) === cat.lastIndexOf(cat[j])){
-    //        see.push(cat[i]);
-    //      }
-    //    }
-    //  }
-    //   return _.filter(cat,function(val){
-    //     return _.indexOf(see,val) === -1;
-    //   })[0];
+    var cat = []
+    _.each(arguments, function(arr){
+      cat = cat.concat(arr);
+    });
 
+      return [_.filter(cat,function(val){
+        return _.indexOf(cat,val) !== _.lastIndexOf(cat,val)
+      })[0]];
   };
 
   // Take the difference between one array and a number of other arrays.
   // Only the elements present in just the first array will remain.
   _.difference = function(array) {
     var args = [];
-    var diff = _.map(array, function(val){
-      return val;
-    });
-    var diffArr = [];
     for(var i = 1; i < arguments.length; i++){
       args.push(arguments[i]);
     }
+    var diff = _.map(array, function(val){
+      return val;
+    });
+
     _.each(args, function(arr){
       diff = diff.concat(arr);
+    });
 
+    return _.filter(diff, function(val){
+      return _.indexOf(array, val) !== -1 && _.indexOf(diff,val) === _.lastIndexOf(diff, val)
     });
-    // var unique = _.uniq(diff);
-    _.each(diff, function(val){
-      if(_.indexOf(array, val) !== -1 && _.indexOf(diffArr, val) === -1){
-        diff.push(val);
-      }
-    });
-   return diffArr;
   };
 
   // Returns a function, that, when invoked, will only be triggered at most once
@@ -463,5 +458,16 @@
   //
   // Note: This is difficult! It may take a while to implement.
   _.throttle = function(func, wait) {
+
+
+  };
+  //Made this function to work with difference. Returns index position of value from right
+  _.lastIndexOf = function(array, val){
+    for(var i = array.length - 1; i >= 0; i--){
+      if(array[i] === val){
+        return i;
+      }
+    }
+    return - 1;
   };
 }());
